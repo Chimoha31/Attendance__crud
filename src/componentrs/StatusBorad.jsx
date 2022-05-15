@@ -1,11 +1,35 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
+import PersonData from "./person_data/PersonData";
 
 const StatusBorad = () => {
+  const [persons, setPersons] = useState([]);
+
+  const getPersons = async () => {
+    try {
+      const data = await PersonData.getAllPerson();
+      console.log(data.docs);
+      setPersons(
+        data.docs.map((doc) => ({
+          ...doc.data(),
+          id: doc.id,
+        }))
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getPersons();
+  }, []);
+
   return (
     <Fragment>
       <div>
-        <Button variant="dark" className="mb-3">Refresh List</Button>
+        <Button variant="dark" className="mb-3">
+          Refresh List
+        </Button>
       </div>
       <Table striped bordered hover>
         <thead>
@@ -18,16 +42,18 @@ const StatusBorad = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>1</td>
-            <td>Teddy Maekawa</td>
-            <td>mokochii1108@gmail.com</td>
-            <td>Remote</td>
-            <td>
-              <Button variant="secondary">Edit</Button>
-              <Button variant="danger">Delete</Button>
-            </td>
-          </tr>
+          {persons.map((person, index) => (
+            <tr key={person.id}>
+              <td>{index + 1}</td>
+              <td>{person.name}</td>
+              <td>{person.email}</td>
+              <td>{person.status}</td>
+              <td>
+                <Button variant="outline-secondary">Edit</Button>
+                <Button variant="outline-danger">Delete</Button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </Fragment>

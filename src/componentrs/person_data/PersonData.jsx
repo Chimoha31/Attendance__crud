@@ -12,6 +12,7 @@ import {db} from '../firebase/Firebase';
 const personRef = collection(db, "persons");
 
 class PersonData {
+  
   addPersons = (newPerson) => {
     return addDoc(personRef, newPerson);
   }

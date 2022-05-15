@@ -5,23 +5,50 @@ import PersonData from "./person_data/PersonData";
 const Input = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("Remote");
+  const [status, setStatus] = useState("In Person");
   const [flag, setFlag] = useState(false);
   const [message, setMessage] = useState({ error: false, errorMsg: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault(e);
+    setMessage("");
+
+    
     if (name === "" || email === "") {
-      setMessage({error: true, errorMsg: "Fill in the All blank is required"});
-    }else{
-      await PersonData.addPersons()
+      setMessage({ error: true, errorMsg: "To fill all is required" });
+      return;
     }
+    
+    const newPerson = {
+      name: name,
+      email: email,
+      status: status,
+    };
+    console.log(newPerson);
+    // update()の時に修正↓
+    try {
+      await PersonData.addPersons(newPerson);
+      setMessage({ error: false, errorMsg: "Added Successfully🎉" });
+    } catch (err) {
+      setMessage({ error: true, errorMsg: err.message });
+    }
+
+    setName("");
+    setEmail("");
   };
 
   return (
     <Fragment>
+      {message.errorMsg && (
+        <Alert
+          variant={message.error ? "danger" : "success"}
+          dismissible
+          onClose={() => setMessage("")}
+        >
+          {message.errorMsg}
+        </Alert>
+      )}
       <form onSubmit={handleSubmit} className="mb-5">
-        {message.errorMsg ? <Alert variant="danger">{message.errorMsg}</Alert> : <Alert></Alert>}
         <InputGroup className="mb-3">
           <InputGroup.Text id="basic-addon1">Name</InputGroup.Text>
           <FormControl
@@ -43,7 +70,7 @@ const Input = () => {
 
         <div className="mb-3">
           <Button
-            variant="outline-success"
+            variant="secondary"
             onClick={(e) => {
               setStatus("Remote");
               setFlag(!flag);
@@ -53,7 +80,7 @@ const Input = () => {
             Remote
           </Button>
           <Button
-            variant="outline-danger"
+            variant="danger"
             onClick={(e) => {
               setStatus("In person");
               setFlag(!flag);
@@ -65,7 +92,9 @@ const Input = () => {
         </div>
 
         <div className="d-grid">
-          <Button variant="primary">Add / Update</Button>
+          <Button variant="primary" type="submit">
+            Add / Update
+          </Button>
         </div>
       </form>
     </Fragment>
