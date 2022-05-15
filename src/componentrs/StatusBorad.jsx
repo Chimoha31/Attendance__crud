@@ -2,13 +2,14 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Button, Table } from "react-bootstrap";
 import PersonData from "./person_data/PersonData";
 
-const StatusBorad = () => {
+const StatusBorad = ({getPersonIdHandler}) => {
   const [persons, setPersons] = useState([]);
 
   const getPersons = async () => {
     try {
       const data = await PersonData.getAllPerson();
       console.log(data.docs);
+      // idを取り出したい為にmap()を使用
       setPersons(
         data.docs.map((doc) => ({
           ...doc.data(),
@@ -23,6 +24,12 @@ const StatusBorad = () => {
   useEffect(() => {
     getPersons();
   }, []);
+
+  const deleteHandler = async (id) => {
+    await PersonData.deletePerson(id);
+
+    getPersons();
+  }
 
   return (
     <Fragment>
@@ -49,8 +56,8 @@ const StatusBorad = () => {
               <td>{person.email}</td>
               <td>{person.status}</td>
               <td>
-                <Button variant="outline-secondary">Edit</Button>
-                <Button variant="outline-danger">Delete</Button>
+                <Button variant="outline-secondary" onClick={(e) => getPersonIdHandler(person.id)}>Edit</Button>
+                <Button variant="outline-danger" onClick={(e) => deleteHandler(person.id)}>Delete</Button>
               </td>
             </tr>
           ))}

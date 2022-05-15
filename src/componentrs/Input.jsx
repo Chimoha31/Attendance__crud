@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Alert, Button, FormControl, InputGroup } from "react-bootstrap";
 import PersonData from "./person_data/PersonData";
 
-const Input = () => {
+const Input = ({personId, setPersonId}) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("In Person");
@@ -13,12 +13,11 @@ const Input = () => {
     e.preventDefault(e);
     setMessage("");
 
-    
     if (name === "" || email === "") {
       setMessage({ error: true, errorMsg: "To fill all is required" });
       return;
     }
-    
+
     const newPerson = {
       name: name,
       email: email,
@@ -32,10 +31,13 @@ const Input = () => {
     } catch (err) {
       setMessage({ error: true, errorMsg: err.message });
     }
-
     setName("");
     setEmail("");
   };
+
+  useEffect(() => {
+
+  }, [personId])
 
   return (
     <Fragment>
